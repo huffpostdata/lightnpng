@@ -1,0 +1,34 @@
+{
+  "name": "node-lightnpng",
+  "version": "1.0.0",
+  "description": "Converts a Buffer to PNG format -- very, very quickly.",
+  "main": "index.js",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^2.4.0"
+  },
+  "devDependencies": {
+    "canvas": "adamhooper/node-canvas#toBuffer-raw",
+    "mocha": "^3.1.0"
+  },
+  "scripts": {
+    "test": "mocha",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huffpostdata/node-lightnpng.git"
+  },
+  "keywords": [
+    "Buffer",
+    "PNG",
+    "ARGB32"
+  ],
+  "author": "Adam Hooper <adam.hooper@huffingtonpost.com>",
+  "license": "BSD-2-Clause",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/huffpostdata/node-lightnpng/issues"
+  },
+  "homepage": "https://github.com/huffpostdata/node-lightnpng#readme"
+}
