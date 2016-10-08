@@ -30,7 +30,7 @@ ctx.fillRect(50, 50, 30, 400);
 const cairoBuf = canvas.toBuffer('raw') // ARGB, native-endian data
 
 // Now's where this library comes in: let's create a PNG!
-const lightnpng = require('lightnpng')
+const lightnpng = require('node-lightnpng')
 var png = lightnpng.native_argb32_to_png(
   cairoBuf,
   640,          // width (in px)
