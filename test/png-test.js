@@ -21,7 +21,6 @@ describe('lightnpng', () => {
 
       it('should render a PNG Buffer', () => {
         const png = lightnpng.native_argb32_to_png(cairoBuf, 640, 480, canvas.stride);
-        fs.writeFileSync(`${__dirname}/../t.png`, png)
         assert.ok(Buffer.isBuffer(png));
         assert.deepEqual(png, fs.readFileSync(`${__dirname}/example-from-readme.png`))
       })
