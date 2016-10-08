@@ -1,16 +1,12 @@
 #include "write_png.h"
 
+#include "compress.h"
 #include "crc.h"
 
 #include <arpa/inet.h>
 #include <cassert>
 #include <cstring>
-#include <forward_list>
 #include <memory>
-#include <string>
-#include <zlib.h>
-
-static const size_t MaxPngChunkSize = 64 * 1024;
 
 static inline void
 write_uint32(uint8_t* buf, uint32_t v)
@@ -43,14 +39,8 @@ write_ihdr(uint8_t* png, int width, int height)
   return 25;
 };
 
-// Holds all zlib data in memory -- even though zlib is designed for streaming
-struct ZlibChunks {
-  size_t nBytes;
-  std::forward_list<std::string> data;
-};
-
 static size_t
-write_idat(uint8_t* png, const ZlibChunks& chunks)
+write_idat(uint8_t* png, const CompressResult& chunks)
 {
   write_uint32(&png[0],  chunks.nBytes); // byte length of IDAT
   write_uint32(&png[4], 0x49444154);     // IDAT
@@ -120,54 +110,6 @@ native_argb32_to_scanlines(
   }
 }
 
-/**
- * Compresses data into smaller chunks.
- *
- * Returns empty ZlibChunks if there's an error. The only possible error is
- * out-of-memory.
- */
-static ZlibChunks
-deflate(uint8_t* bytes, size_t len)
-{
-  z_stream stream;
-  stream.zalloc = Z_NULL;
-  stream.zfree = Z_NULL;
-  stream.opaque = Z_NULL;
-
-  ZlibChunks ret = { 0, std::forward_list<std::string>() };
-
-  int zerr = deflateInit2(
-    &stream,
-    Z_BEST_SPEED,
-    Z_DEFLATED,
-    15,           // windowBits: 32kb window
-    9,            // memLevel: maximum memory => maximum speed
-    Z_RLE         // because zlib manual says it's fast and good for PNG
-  );
-  if (zerr != Z_OK) {
-    return ret; // empty output means error
-  }
-
-  stream.avail_in = len;
-  stream.next_in = bytes;
-
-  uint8_t chunk[MaxPngChunkSize];  // allocated on the stack: cannot error
-
-  do {
-    stream.avail_out = MaxPngChunkSize;
-    stream.next_out = chunk;
-
-    deflate(&stream, Z_FINISH); // cannot error
-
-    size_t chunkSize = MaxPngChunkSize - stream.avail_out;
-    ret.data.emplace_front(reinterpret_cast<char*>(chunk), chunkSize); // TODO catch out-of-mem here
-    ret.nBytes += chunkSize;
-  } while (stream.avail_out == 0);
-  ret.data.reverse();
-
-  return ret;
-}
-
 RawToPngStatus
 native_argb32_to_png(
   const uint8_t* bytes,
@@ -182,8 +124,8 @@ native_argb32_to_png(
   std::unique_ptr<uint8_t[]> scanlines(new uint8_t[scanlines_len]);
   native_argb32_to_scanlines(bytes, &scanlines[0], width, height, stride);
 
-  ZlibChunks zlibChunks = deflate(&scanlines[0], scanlines_len);
-  if (zlibChunks.nBytes == 0 && scanlines_len > 0) return PNG_ENOMEM;
+  CompressResult zlibChunks = compress(&scanlines[0], scanlines_len);
+  if (zlibChunks.status != COMPRESS_OK) return PNG_ENOMEM;
 
   *png_len = 57 + zlibChunks.nBytes;
   *png = reinterpret_cast<uint8_t*>(malloc(*png_len));
