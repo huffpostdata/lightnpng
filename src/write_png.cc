@@ -91,14 +91,27 @@ native_argb32_to_scanlines(
   for (size_t row = 0; row < height; row++) {
     const uint32_t* argb_row = reinterpret_cast<const uint32_t*>(&argb[row * stride]);
 
-    w[0] = 0; // Filter type 0: no filter
+    w[0] = 1; // Filter type 1: "Sub" -- great for swaths of solid color
     ++w;
+
+    uint8_t cr = 0;
+    uint8_t cg = 0;
+    uint8_t cb = 0;
 
     for (size_t x = 0; x < width; x++) {
       uint32_t px = argb_row[x];
-      w[0] = static_cast<uint8_t>(px >> 16); // R
-      w[1] = static_cast<uint8_t>(px >> 8);  // G
-      w[2] = static_cast<uint8_t>(px);       // B
+      uint8_t r = static_cast<uint8_t>(px >> 16);
+      uint8_t g = static_cast<uint8_t>(px >> 8);
+      uint8_t b = static_cast<uint8_t>(px);
+
+      w[0] = r - cr;
+      w[1] = g - cg;
+      w[2] = b - cb;
+
+      cr = r;
+      cg = g;
+      cb = b;
+
       w += 3;
       // This drops the alpha channel without premultiplying. The effect for
       // semitransparent pixels: they look like they've been painted atop a
