@@ -176,7 +176,6 @@ native_argb32_to_png(
   *png = reinterpret_cast<uint8_t*>(malloc(*png_len));
   if (*png == NULL) return PNG_ENOMEM;
 
-
   uint8_t* w = *png;
   w += write_png_header(w);
   w += write_ihdr(w, width, height);
