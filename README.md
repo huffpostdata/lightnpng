@@ -14,6 +14,10 @@ Then use it.
 
 // First, we'll build an ARGB Buffer with node-canvas:
 // https://github.com/Automattic/node-canvas
+//
+// FOR NOW, alter the "canvas" dependency in your "package.json" to:
+//     "canvas": "adamhooper/node-canvas#toBuffer-raw"
+// ... see https://github.com/Automattic/node-canvas/pull/819 for updates
 const Canvas = require('canvas')
 const canvas = new Canvas(640, 480)
 const ctx = canvas.getContext('2d')
