@@ -5,7 +5,7 @@ say lightning.
 
 # Usage
 
-First, install it in your project: `npm install --save lightnpng`
+First, install it in your project: `npm install --save node-lightnpng`
 
 Then use it.
 
