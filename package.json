@@ -1,6 +1,6 @@
 {
   "name": "node-lightnpng",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Converts a Buffer to PNG format -- very, very quickly.",
   "main": "index.js",
   "dependencies": {
