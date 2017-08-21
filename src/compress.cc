@@ -13,7 +13,7 @@ compress(uint8_t* bytes, size_t len)
   stream.zfree = 0;
   stream.opaque = 0;
 
-  CompressResult ret = { COMPRESS_OK, 0, std::forward_list<std::string>() };
+  CompressResult ret = { COMPRESS_OK, 0, std::list<std::string>() };
 
   int zerr = mz_deflateInit2(
     &stream,
