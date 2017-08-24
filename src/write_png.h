@@ -2,7 +2,7 @@
 #define _WRITE_PNG_H
 
 #include <cstddef>
-#include <tr1/cstdint>
+#include <cstdint>
 
 typedef enum {
   PNG_OK,

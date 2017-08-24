@@ -1,7 +1,7 @@
 #ifndef _COMPRESS_H
 #define _COMPRESS_H
 
-#include <list>
+#include <forward_list>
 #include <string>
 
 typedef enum {
@@ -12,7 +12,7 @@ typedef enum {
 struct CompressResult {
   CompressStatus status;
   size_t nBytes;
-  std::list<std::string> data;
+  std::forward_list<std::string> data;
 };
 
 /**
